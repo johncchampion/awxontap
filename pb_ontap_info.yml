@@ -1,25 +1,40 @@
-- name: ..... collect ONTAP Info
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  collections:
+    - netapp.ontap
 
-  netapp.ontap.na_ontap_info:
+  tasks:
 
-    hostname: "{{ netapp_ip }}"
-    username: "{{ netapp_username }}"
-    password: "{{ netapp_password }}"
-    https: true
-    validate_certs: false
-    #state: info
-    
-  register: details
+  - name: ..... collect ONTAP Info
 
-- name: ..... retrieve cluster name
+    netapp.ontap.na_ontap_info:
 
-  set_fact:
-    current_cluster_name: "{{ details.ontap_info.vserver_info[item].vserver_name }}"
-  with_items: "{{ details.ontap_info.vserver_info }}"
-  when: details.ontap_info.vserver_info[item].vserver_type == "admin"
+      hostname: "{{ netapp_ip }}"
+      username: "{{ netapp_username }}"
+      password: "{{ netapp_password }}"
+      https: true
+      validate_certs: false
+      #state: info
+      
+    register: details
 
-- name: ..... retrieve node names
+  - name: ..... retrieve cluster name
 
-  set_fact:
-    node_list: "{{ node_list | default([]) + [ {'node_name': item} ] }}"
-  with_items: "{{ details.ontap_info.cluster_node_info }}"
+    set_fact:
+      current_cluster_name: "{{ details.ontap_info.vserver_info[item].vserver_name }}"
+    with_items: "{{ details.ontap_info.vserver_info }}"
+    when: details.ontap_info.vserver_info[item].vserver_type == "admin"
+
+  - name: ..... retrieve node names
+
+    set_fact:
+      node_list: "{{ node_list | default([]) + [ {'node_name': item} ] }}"
+    with_items: "{{ details.ontap_info.cluster_node_info }}"
+
+  - debug:
+      var: current_cluster_name
+
+  - debug:
+      var: node_list
