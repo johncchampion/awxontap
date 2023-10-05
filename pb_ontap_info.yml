@@ -9,7 +9,7 @@
 
   - name: ..... collect ONTAP Info
 
-    netapp.ontap.na_ontap_info:
+    netapp.ontap.na_ontap_rest_info:
 
       hostname: "{{ netapp_ip }}"
       username: "{{ netapp_username }}"
