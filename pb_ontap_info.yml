@@ -7,7 +7,7 @@
 
   tasks:
 
-  - name: ..... collect ONTAP Info
+  - name: ..... collect ONTAP Volume Info
 
     netapp.ontap.na_ontap_rest_info:
 
