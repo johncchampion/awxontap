@@ -16,25 +16,19 @@
       password: "{{ netapp_password }}"
       https: true
       validate_certs: false
-      #state: info
+
+      use_python_keys: true
+
+      gather_subset: storage/volumes
+      fields: '*'
       
-    register: details
-
-  - name: ..... retrieve cluster name
-
-    set_fact:
-      current_cluster_name: "{{ details.ontap_info.vserver_info[item].vserver_name }}"
-    with_items: "{{ details.ontap_info.vserver_info }}"
-    when: details.ontap_info.vserver_info[item].vserver_type == "admin"
-
-  - name: ..... retrieve node names
-
-    set_fact:
-      node_list: "{{ node_list | default([]) + [ {'node_name': item} ] }}"
-    with_items: "{{ details.ontap_info.cluster_node_info }}"
+    register: volinfo
 
   - debug:
-      var: current_cluster_name
+      var: volinfo
+
+  - set_fact:
+      vol1name: "{{ volinfo.ontap_info.storage_volumes.records.0.name }}"
 
   - debug:
-      var: node_list
+      var: vol1name
